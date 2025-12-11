@@ -56,12 +56,12 @@ export default function MarketingProcess() {
 
         {/* Top Badge */}
         <div className="text-xs tracking-[0.25em] uppercase font-semibold text-orange-400 mb-2">
-          How it work
+            What We Do
         </div>
 
         {/* Title */}
         <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-14">
-          Our Step-by-Step Marketing Process
+            End-to-End Digital, Creative & IT Services
         </h2>
 
         {/* Steps */}

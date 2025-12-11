@@ -1,10 +1,15 @@
 import type { Metadata } from "next";
-import { Playfair_Display, DM_Sans } from "next/font/google";
+import { Figtree } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
 
-const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-display" });
-const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-body" });
+const figtree = Figtree({
+  subsets: ["latin"],
+  variable: "--font-body",
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  adjustFontFallback: true,
+});
 
 export const metadata: Metadata = {
   title: "Seo Inux Header",
@@ -17,8 +22,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${playfair.variable} ${dmSans.variable} font-body antialiased`}>
+    <html lang="en" className={figtree.variable}>
+      <body className={`${figtree.className} font-body antialiased`}>
         <Providers>
           {children}
         </Providers>
