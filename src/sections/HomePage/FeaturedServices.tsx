@@ -24,7 +24,7 @@ const highlightedIds = new Set([col1[0].id, col2[0].id]);
 
 export default function FeaturedServices() {
   return (
-    <section className="relative w-full py-20 lg:py-28 bg-gradient-to-br from-[#1e140f] to-[#2a1c14]">
+    <section className="relative w-full py-20 lg:py-28">
       <div className="container mx-auto flex flex-col md:flex-row gap-16">
 
         {/* LEFT SIDE */}
@@ -58,7 +58,7 @@ export default function FeaturedServices() {
           <div className="flex flex-wrap gap-4 justify-center lg:hidden">
             {FEATURED_SERVICES.map((svc) => (
               <div key={svc.id} className="w-[47%] min-w-[150px]">
-                <ServiceCard service={svc} highlight={highlightedIds.has(svc.id)} />
+                <ServiceCard service={svc} highlight={false} />
               </div>
             ))}
           </div>
@@ -88,13 +88,13 @@ export default function FeaturedServices() {
 
 function ServiceCard({ service, highlight = false }: { service: Feature; highlight?: boolean }) {
   const Icon = service.icon;
+  const cardStyle = highlight ? undefined : { background: "var(--gradient-body)" };
   return (
     <div
       className={`w-full h-[160px] rounded-2xl px-2 shadow-lg border flex flex-col items-center justify-center text-center transition-transform hover:-translate-y-1 hover:shadow-xl ${
-        highlight
-          ? "bg-primary text-white border-secondary"
-          : "bg-[linear-gradient(135deg,#fff8f2_0%,#fef3e7_100%)] text-slate-900 border-primary/15"
+        highlight ? "bg-primary text-white border-secondary" : "text-slate-900 border-primary/15"
       }`}
+      style={cardStyle}
     >
       <div className="mb-2">
         <Icon className={`h-9 w-9 ${highlight ? "text-white" : "text-primary"}`} />

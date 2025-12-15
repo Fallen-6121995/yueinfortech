@@ -13,6 +13,11 @@ import growArrowSmall from "@/assets/theme-images/grow-arrow2.png";
 import heroBg from "@/assets/theme-images/bg-seo-fast1.png";
 import womanImg from "@/assets/theme-images/women-slider-img-web.webp";
 
+type HeroProps = {
+  heroEyebrow?: string;
+  heroHeading?: string;
+};
+
 type Star = {
   left: string;
   top: string;
@@ -23,7 +28,10 @@ type Star = {
   scale: number;
 };
 
-const Hero = () => {
+const Hero = ({
+  heroEyebrow = "",
+  heroHeading = "",
+}: HeroProps) => {
   const [stars, setStars] = useState<Star[]>([]);
 
   // Generate star positions on the client only to avoid SSR hydration drift
@@ -44,7 +52,10 @@ const Hero = () => {
   }, []);
 
   return (
-    <section className="relative min-h-screen overflow-hidden bg-gradient-to-br from-[#0d0806] via-[#120b08] to-[#1c120b] text-foreground">
+    <section
+      className="relative min-h-screen overflow-hidden text-foreground"
+      style={{ background: "var(--gradient-hero)" }}
+    >
 
       {/* Background grid */}
       <div
@@ -95,7 +106,7 @@ const Hero = () => {
       <Image
         src={growArrow}
         alt=""
-        className="hidden lg:block pointer-events-none absolute left-[84%] top-[26%] w-[220px] xl:w-[280px] rotate-[-10deg] opacity-90 z-[8]"
+        className="hidden lg:block pointer-events-none absolute left-[84%] top-[26%] w-[220px] xl:w-[280px] rotate-[-10deg] opacity-90 z-[6]"
       />
 
       {/* Left-side small arrow */}
@@ -123,17 +134,16 @@ const Hero = () => {
           <div className="relative space-y-6 text-left lg:space-y-8">
             <SectionHeader
               as="h1"
-              eyebrow="Take your business"
               eyebrowContent={
                 <span className="inline-flex items-center gap-2">
                   <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/15 text-primary">
                     <Sparkles className="h-4 w-4" />
                   </span>
-                  Take your business
+                  {heroEyebrow}
                 </span>
               }
               eyebrowClassName="bg-primary/15 text-primary ring-primary/20 px-3 py-2"
-              title="Web Development, SEO & IT Solutions That Help You Grow!"
+              title={heroHeading}
               titleClassName="text-[1.95rem] sm:text-[2.2rem] md:text-[2.45rem] lg:text-[3rem] xl:text-[3.25rem] leading-[1.14] tracking-[0.5px] text-white"
               subtitle="Yue Infotech builds fast, modern websites, AI-optimized SEO strategies, performance ads, powerful content, and secure IT solutions — everything your business needs to scale."
               subtitleClassName="text-[15px] text-muted-foreground sm:text-base sm:max-w-xl md:max-w-2xl"
@@ -142,21 +152,21 @@ const Hero = () => {
             />
 
             {/* SMALL SCREEN ARROWS */}
-            <div className="relative lg:hidden">
+            <div className="relative lg:hidden pointer-events-none -z-10">
               <Image
                 src={growArrow}
                 alt=""
-                className="absolute right-[6px] top-[-70px] w-[240px] sm:w-[300px] md:w-[340px] rotate-[-12deg] opacity-80 pointer-events-none z-[10]"
+                className="absolute right-[6px] top-[-70px] w-[240px] sm:w-[300px] md:w-[340px] rotate-[-12deg] opacity-70"
               />
               <Image
                 src={growArrowSmall}
                 alt=""
-                className="absolute right-[200px] top-[-50px] w-[22px] rotate-[-10deg] opacity-70 z-[1]"
+                className="absolute right-[200px] top-[-50px] w-[22px] rotate-[-10deg] opacity-60"
               />
               <Image
                 src={growArrowSmall}
                 alt=""
-                className="absolute right-[24px] top-[90px] w-[22px] rotate-[6deg] opacity-70 z-[1]"
+                className="absolute right-[24px] top-[90px] w-[22px] rotate-[6deg] opacity-60"
               />
             </div>
 
@@ -164,8 +174,8 @@ const Hero = () => {
             <CtaButton
               href="#contact"
               bgClassName="bg-gradient-to-r from-primary to-orange-400 hover:brightness-110"
-              textClassName="text-primary-foreground"
-              className="w-full sm:w-auto gap-2"
+              textClassName="text-primary-foreground hover:text-white"
+              className="w-full sm:w-auto gap-2 relative z-10 border border-primary"
             >
               <span>Get a Custom Quote</span>
               <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
