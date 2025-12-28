@@ -32,12 +32,11 @@ async function getRelatedServices(excludeSlug: string): Promise<MainService[]> {
       .slice(0, 3)
       .map((svc) => ({
         id: svc.slug,
-        eyebrow: (svc.hero as any)?.eyebrow ?? "",
+        eyebrow: svc.hero.subheading,
         title: svc.hero.heading,
         description: svc.hero.description,
-        image:
-          svc.hero.backgroundImage||"",
-        services: [],
+        image: svc.hero.backgroundImage || "",
+        services: svc.intro_section.features || [],
         primaryHref: `/services/${svc.slug}`,
         slug: svc.slug,
       } satisfies MainService));

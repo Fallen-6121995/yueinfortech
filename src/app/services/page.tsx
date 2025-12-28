@@ -15,22 +15,19 @@ async function getAllServices() {
     const snapshot = await getDocs(servicesRef);
     if (snapshot.empty) return [];
 
-    // We map the complex Firestore data to the simple props needed by your Card
+    // We map the complex Firestore data to a structure that matches the `MainService` type
     return snapshot.docs.map((doc) => {
       const data = doc.data() as ServiceDoc;
       return {
         id: data.id,
         slug: data.slug,
-        // Use the Hero Heading as the Card Title
-        title: data.hero.heading, 
-        // Use the Hero Description (truncated/styled by the card)
-        description: data.hero.description, 
-        // Use the Hero background image, or a fallback
-        image: data.hero.backgroundImage || "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?q=80&w=1920",
-        // Fallback icon since the universal schema doesn't have a top-level icon field
-        icon: "Folder", 
-        // Ensure the card knows where to link
-        href: `/services/${data.slug}`
+        title: data.hero.heading,
+        description: data.hero.description,
+        image:
+          data.hero.backgroundImage ||
+          "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?q=80&w=1920",
+        eyebrow: data.hero.subheading,
+        services: data.intro_section.features,
       };
     });
   } catch (error) {
@@ -64,7 +61,6 @@ export default async function ServicesPage() {
           ) : (
             <div className="grid gap-8 lg:gap-10 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
               {services.map((service, index) => (
-                // @ts-ignore - Ignoring strict type checks on the 'service' prop if MainServiceCard type differs slightly
                 <MainServiceCard
                   key={service.id}
                   service={service}

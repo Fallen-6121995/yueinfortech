@@ -254,7 +254,7 @@ export async function fetchFaqsByCategory(categoryId: string, { publishedOnly = 
         published: data.published !== false,
       } as PublicFaq & { published: boolean };
     })
-    .filter((f): f is PublicFaq & { published: boolean } => Boolean(f));
+    .filter((f: (PublicFaq & { published: boolean }) | null): f is PublicFaq & { published: boolean } => Boolean(f));
 
   // If the query returned nothing, list documents directly and filter client-side.
   if (faqs.length === 0) {
@@ -280,12 +280,12 @@ export async function fetchFaqsByCategory(categoryId: string, { publishedOnly = 
             published: data.published !== false,
           } as PublicFaq & { published: boolean };
         })
-        .filter((f): f is PublicFaq & { published: boolean } => Boolean(f));
+        .filter((f: (PublicFaq & { published: boolean }) | null): f is PublicFaq & { published: boolean } => Boolean(f));
     }
   }
 
-  const filtered = publishedOnly ? faqs.filter((f) => f.published) : faqs;
-  return filtered.sort((a, b) => a.order - b.order);
+  const filtered = publishedOnly ? faqs.filter((f: PublicFaq & { published: boolean }) => f.published) : faqs;
+  return filtered.sort((a: PublicFaq, b: PublicFaq) => a.order - b.order);
 }
 
 export async function fetchFaqsForCategoryName(categoryName: string, opts?: { publishedOnly?: boolean; revalidate?: number }) {
@@ -349,14 +349,14 @@ export async function fetchBlogs({ limit = 4, revalidate = 300 } = {}): Promise<
         id: row.document.name?.split("/").pop() ?? "",
         title: String(data.title ?? ""),
         slug: data.slug ? `/blog/${data.slug}` : `/blog/${row.document.name?.split("/").pop() ?? ""}`,
-        excerpt: data.excerpt ?? "",
-        content: data.content ?? "",
-        thumbnail: data.thumbnail ?? "",
-        author: data.author ?? "Admin",
+        excerpt: typeof data.excerpt === "string" ? data.excerpt : "",
+        content: typeof data.content === "string" ? data.content : "",
+        thumbnail: typeof data.thumbnail === "string" ? data.thumbnail : "",
+        author: typeof data.author === "string" ? data.author : "Admin",
         date: data.createdAt ?? data.updatedAt ?? "",
       } as PublicBlog;
     })
-    .filter((b): b is PublicBlog => Boolean(b && b.title));
+    .filter((b: PublicBlog | null): b is PublicBlog => Boolean(b && b.title));
 }
 
 export async function fetchBlogBySlug(slug: string, { revalidate = 300 } = {}): Promise<PublicBlog | null> {
@@ -398,15 +398,20 @@ export async function fetchBlogBySlug(slug: string, { revalidate = 300 } = {}): 
   const data = decodeDocument(entry);
   if (!data) return null;
 
-  const date = data.createdAt ?? data.updatedAt ?? "";
+  const date =
+    typeof data.createdAt === "string"
+      ? data.createdAt
+      : typeof data.updatedAt === "string"
+        ? data.updatedAt
+        : "";
   return {
     id: entry.document.name?.split("/").pop() ?? "",
     title: String(data.title ?? ""),
     slug: `/blog/${slug}`,
-    excerpt: data.excerpt ?? "",
-    content: data.content ?? "",
-    thumbnail: data.thumbnail ?? "",
-    author: data.author ?? "Admin",
+    excerpt: typeof data.excerpt === "string" ? data.excerpt : "",
+    content: typeof data.content === "string" ? data.content : "",
+    thumbnail: typeof data.thumbnail === "string" ? data.thumbnail : "",
+    author: typeof data.author === "string" ? data.author : "Admin",
     date,
   };
 }

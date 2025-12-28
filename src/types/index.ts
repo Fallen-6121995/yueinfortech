@@ -22,19 +22,20 @@ export type LinkAction = {
       metaDescription: string;
       keywords: string[];
     };
-    hero: {
-      heading: string;
-      subheading: string;
-      description: string;
-      backgroundImage?: string;
-      actions: LinkAction[];
-    };
-    intro_section: {
-      heading: string;
-      description: string;
-      features: string[];
-      cta: LinkAction;
-    };
+  hero: {
+    heading: string;
+    subheading: string;
+    description: string;
+    backgroundImage?: string;
+    actions: LinkAction[];
+  };
+  intro_section: {
+    heading: string;
+    description: string;
+    features: string[];
+    cta: LinkAction;
+    introImage?: string;
+  };
     sub_services_section: {
       heading: string;
       description: string;
