@@ -7,6 +7,9 @@ import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowUpRight, ChevronDown, Menu, PhoneCall, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import type { MainService } from "@/data/main-services.data";
 
 // --- Configuration ---
 const navItems = [
@@ -31,13 +34,51 @@ const Logo = ({ tone }: { tone: "light" | "dark" }) => (
   </Link>
 );
 
-const DesktopNav = ({ isScrolled }: { isScrolled: boolean }) => {
+const DesktopNav = ({ isScrolled, services }: { isScrolled: boolean; services: MainService[] }) => {
   const pathname = usePathname();
 
   return (
     <nav className="hidden xl:flex items-center gap-2">
       {navItems.map((item) => {
         const isActive = pathname === item.href;
+        if (item.label === "Services") {
+          return (
+            <div key={item.label} className="group relative">
+              <Link
+                href={item.href}
+                className={cn(
+                  "group relative flex items-center gap-1 rounded-full px-4 py-2 text-sm font-medium transition-all duration-200",
+                  isScrolled
+                    ? isActive
+                      ? "bg-indigo-600 text-white"
+                      : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
+                    : isActive
+                      ? "text-white bg-white/10"
+                      : "text-slate-200 hover:text-white hover:bg-white/5"
+                )}
+              >
+                <span className="relative z-[1]">{item.label}</span>
+                <ChevronDown className="h-4 w-4" />
+              </Link>
+              <div className="pointer-events-none absolute left-1/2 top-full z-30 mt-2 w-80 -translate-x-1/2 opacity-0 transition duration-200 group-hover:pointer-events-auto group-hover:opacity-100">
+                <div className="overflow-hidden rounded-2xl border border-black/5 bg-white/95 shadow-xl backdrop-blur-sm">
+                  <div className="grid gap-1 p-3">
+                    {services.map((svc) => (
+                      <Link
+                        key={svc.slug}
+                        href={`/services/${svc.slug}`}
+                        className="flex flex-col rounded-xl px-3 py-2.5 text-left text-sm font-medium text-slate-900 transition hover:bg-gray-50"
+                      >
+                        <span>{svc.title}</span>
+                        <span className="text-xs font-normal text-slate-500 line-clamp-2">{svc.description}</span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        }
         return (
           <Link
             key={item.label}
@@ -62,9 +103,18 @@ const DesktopNav = ({ isScrolled }: { isScrolled: boolean }) => {
   );
 };
 
-const MobileMenu = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (isOpen: boolean) => void; }) => {
+const MobileMenu = ({
+  isOpen,
+  setIsOpen,
+  services,
+}: {
+  isOpen: boolean;
+  setIsOpen: (isOpen: boolean) => void;
+  services: MainService[];
+}) => {
   const pathname = usePathname();
-  
+  const [servicesOpen, setServicesOpen] = useState(false);
+
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "";
     return () => {
@@ -109,6 +159,40 @@ const MobileMenu = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (isOpen
             <nav className="space-y-3">
                 {navItems.map((item) => {
                   const isActive = pathname === item.href;
+                  if (item.label === "Services") {
+                    return (
+                      <div key={item.label} className="space-y-2">
+                        <button
+                          type="button"
+                          onClick={() => setServicesOpen((prev) => !prev)}
+                          className={cn(
+                            "flex w-full items-center justify-between rounded-xl px-3 py-3 text-left text-base font-medium transition-colors",
+                            isActive ? "bg-indigo-600 text-white" : "text-slate-200 hover:bg-white/5 hover:text-white"
+                          )}
+                        >
+                          {item.label}
+                          <ChevronDown className={cn("h-4 w-4 transition-transform", servicesOpen && "rotate-180")} />
+                        </button>
+                        {servicesOpen && (
+                          <div className="grid gap-2 rounded-lg border border-white/10 bg-white/5 p-3">
+                            {services.map((svc) => (
+                              <Link
+                                key={svc.slug}
+                                href={`/services/${svc.slug}`}
+                                onClick={() => {
+                                  setIsOpen(false);
+                                  setServicesOpen(false);
+                                }}
+                                className="rounded-lg px-3 py-2 text-sm text-slate-200 transition hover:bg-white/10"
+                              >
+                                {svc.title}
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  }
                   return (
                     <Link
                       key={item.label}
@@ -150,12 +234,42 @@ const MobileMenu = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (isOpen
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [services, setServices] = useState<MainService[]>([]);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+    const load = async () => {
+      try {
+        const snap = await getDocs(collection(db, "services"));
+        const fetched = snap.docs.map((d) => {
+          const data = d.data() as any;
+          return {
+            id: data.slug ?? d.id,
+            eyebrow: (data.hero as any)?.eyebrow ?? "",
+            title: data.hero?.heading ?? data.title ?? d.id,
+            description: data.hero?.description ?? "",
+            image: data.hero?.backgroundImage ?? data.image ?? "",
+            services: [],
+            primaryHref: `/services/${data.slug ?? d.id}`,
+            slug: data.slug ?? d.id,
+          } as MainService;
+        });
+        if (mounted && fetched.length) setServices(fetched);
+      } catch (error) {
+        console.warn("Failed to load services for navbar dropdown", error);
+      }
+    };
+    load();
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   useEffect(() => {
@@ -192,7 +306,7 @@ const Navbar = () => {
                 <Logo tone={isScrolled ? "dark" : "light"} />
               </div>
               
-              <DesktopNav isScrolled={isScrolled} />
+              <DesktopNav isScrolled={isScrolled} services={services} />
               
               <div className="flex items-center gap-2">
                 <div className="hidden items-center gap-3 rounded-full border px-4 py-2 text-left text-xs backdrop-blur-lg xl:flex"
@@ -239,7 +353,7 @@ const Navbar = () => {
           </div>
         </div>
       </header>
-      <MobileMenu isOpen={isOpen} setIsOpen={setIsOpen} />
+              <MobileMenu isOpen={isOpen} setIsOpen={setIsOpen} services={services} />
     </>
   );
 };
