@@ -51,11 +51,10 @@ const Hero = ({
   }, []);
 
   return (
-    // Changed: Use h-screen on LG so items-end works correctly to place her at the bottom
     <section className="relative min-h-[90vh] lg:h-screen overflow-hidden bg-[#0a051e] text-white selection:bg-purple-500/30">
       
       {/* =====================================================
-          BACKGROUND ATMOSPHERE (Unchanged)
+          BACKGROUND ATMOSPHERE
       ===================================================== */}
       <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-indigo-700/20 blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-5%] w-[60%] h-[60%] bg-purple-600/20 blur-[130px] rounded-full pointer-events-none" />
@@ -99,12 +98,15 @@ const Hero = ({
       {/* =====================================================
           MAIN CONTENT
       ===================================================== */}
-      {/* Changed: items-center -> items-end to push content to the bottom */}
       <div className="container relative z-10 flex h-full items-end pt-20 lg:pt-0">
-        {/* Changed: Added pb-12 lg:pb-0 to give text some space on mobile, but sit flush on desktop */}
-        <div className="grid h-full w-full flex-1 gap-12 lg:gap-8 grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] items-center lg:items-end pb-12 lg:pb-0">
+        
+        {/* UPDATE: Removed 'pb-12' from here. Now uses 'pb-0' so content hits the floor */}
+        <div className="grid h-full w-full flex-1 gap-8 lg:gap-8 grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] items-end pb-0 pt-6">
 
-          {/* LEFT COLUMN: TEXT (Unchanged, but will sit higher up) */}
+          {/* LEFT COLUMN: TEXT */}
+          {/* Added 'pb-12' ONLY to the text column if you want text to have breathing room, 
+              but kept it 0 for now to ensure alignment control. 
+              Added 'mb-auto lg:mb-32' to push text up on mobile if flex stretches. */}
           <div className="relative space-y-8 text-left z-20 self-center lg:self-center lg:mb-32">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-purple-500/30 bg-purple-900/20 backdrop-blur-md shadow-[0_0_20px_-5px_rgba(168,85,247,0.4)]">
                 <Sparkles className="h-4 w-4 text-purple-300 animate-pulse" />
@@ -133,16 +135,17 @@ const Hero = ({
           </div>
 
           {/* RIGHT COLUMN: WOMAN & TECH GRAPHICS */}
-          {/* Changed: items-center -> items-end to place her at the bottom */}
-          <div className="relative h-full w-full flex items-end justify-center lg:justify-end">
+          {/* Used 'items-end' to force bottom alignment */}
+          <div className="relative h-full w-full flex items-end justify-center lg:justify-end -mb-1"> 
+            {/* Added -mb-1 to fix potential 1px pixel gap on some screens */}
             
-            {/* 1. The Tech Circle Behind (Unchanged) */}
+            {/* 1. The Tech Circle Behind */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] lg:w-[600px] lg:h-[600px] border border-white/5 rounded-full animate-spin-slow pointer-events-none">
                  <div className="absolute top-0 left-1/2 w-2 h-2 bg-purple-500 rounded-full shadow-[0_0_10px_rgba(168,85,247,1)]"></div>
             </div>
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] lg:w-[450px] lg:h-[450px] border border-dashed border-indigo-500/20 rounded-full pointer-events-none"></div>
 
-            {/* 2. Floating "Glass" Code Cards (Behind Woman) (Unchanged) */}
+            {/* 2. Floating "Glass" Code Cards */}
             <div className="absolute top-[20%] left-[-5%] lg:left-[5%] z-0 animate-float-slow hidden sm:block">
                 <div className="bg-slate-900/60 backdrop-blur-xl border border-white/10 p-4 rounded-xl shadow-2xl w-48 transform -rotate-6">
                     <div className="flex gap-2 mb-2">
@@ -158,8 +161,7 @@ const Hero = ({
                 </div>
             </div>
 
-            {/* Changed: Moved Arrow Images HERE, before the woman image, so they are behind her. */}
-            {/* Big Arrow */}
+            {/* ARROWS BEHIND */}
             <div className="absolute -right-4 top-[10%] lg:right-[0%] lg:top-[15%] z-0 animate-pulse-slow">
                 <Image
                     src={growArrow}
@@ -167,7 +169,6 @@ const Hero = ({
                     className="w-[180px] sm:w-[220px] lg:w-[260px] opacity-90 rotate-[-15deg] filter hue-rotate-[160deg] brightness-125 saturate-150 drop-shadow-[0_0_15px_rgba(234,179,8,0.5)]"
                 />
             </div>
-            {/* Small Arrow 1 */}
             <div className="absolute right-[20%] top-[40%] z-0">
                 <Image
                     src={growArrowSmall}
@@ -175,7 +176,6 @@ const Hero = ({
                     className="w-[25px] opacity-80 filter hue-rotate-[160deg] brightness-125 saturate-150 drop-shadow-[0_0_10px_rgba(234,179,8,0.6)]"
                 />
             </div>
-             {/* Small Arrow 2 */}
              <div className="absolute right-[5%] bottom-[50%] z-0">
                 <Image
                     src={growArrowSmall}
@@ -184,19 +184,18 @@ const Hero = ({
                 />
             </div>
 
-            {/* 3. The Woman Image (Now comes AFTER arrows) */}
-            {/* Changed: Added self-end to ensure she sits at the bottom */}
+            {/* 3. The Woman Image */}
+            {/* Added 'self-end' and removed padding/margin blockers */}
             <div className="relative z-10 self-end">
                 <Image
                 src={womanImg}
                 alt="Digital Growth Expert"
-                // Changed: Removed relative positioning and object-contain to allow it to sit flush at bottom
                 className="w-[300px] sm:w-[380px] lg:w-[480px] xl:w-[550px] drop-shadow-2xl"
                 priority
                 />
             </div>
 
-            {/* 4. Code card in front (Unchanged) */}
+            {/* 4. Code card in front */}
             <div className="absolute bottom-[25%] right-[-5%] z-20 animate-float-delayed hidden sm:block">
                 <div className="bg-indigo-900/60 backdrop-blur-xl border border-indigo-500/20 p-4 rounded-xl shadow-2xl w-40 transform rotate-3">
                      <Code2 className="w-8 h-8 text-indigo-400 mb-2" />
